@@ -4,8 +4,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.controller.ApiCalling;
 import com.controller.DataClass;
@@ -15,12 +15,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 @WebServlet("/PetController")
 public class PetController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	//static Logger log = Logger.getLogger(PetController.class.getName());
 	 private static final Logger log = LogManager.getLogger(PetController.class);  
-	public PetController() {
+	
+	 public PetController() {
 		
 	}
   
@@ -42,10 +44,13 @@ protected void doGet(HttpServletRequest req, HttpServletResponse res) throws Ser
 			 	URL url = new URL("https://petstore.swagger.io/v2/pet/findByStatus?status=" + petStatus);
 	            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 	            conn.setRequestMethod("GET");
-	           log.info("connection established....!");	            
+	            
+	            log.info("connection established....!");	            
+	            
 	            int responseCode = conn.getResponseCode();
 	            
 	            if (responseCode != 200) {
+	            	log.warn("Invalid responsecode");
 	                throw new RuntimeException("HttpResponseCode: " + responseCode);
 	               
 	            } else {
@@ -55,11 +60,21 @@ protected void doGet(HttpServletRequest req, HttpServletResponse res) throws Ser
 	            		  sb.append(sc.nextLine());
 	            	  }
 	            	  sc.close();
-	            	  System.out.println(sb);
+	            	  /*System.out.println("{\r\n"
+		                  		+ "\"response\": {\r\n"
+		                  		+ "\"pets\":"+sb+"}\r\n"
+		                  				+ "}");*/
+	            	  log.debug("{\r\n"
+		                  		+ "\"response\": {\r\n"
+		                  		+ "\"pets\":"+sb+"}\r\n"
+		                  				+ "}");
 	            	  //log.info(sb);
 	            	  PrintWriter pw=res.getWriter();
 	            	  res.setContentType("application/json");
-	                  pw.print(sb);
+	                  pw.print("{\r\n"
+	                  		+ "\"response\": {\r\n"
+	                  		+ "\"pets\":"+sb+"}\r\n"
+	                  				+ "}");
 	            }
 		}catch(Exception e) {
 			e.printStackTrace();
